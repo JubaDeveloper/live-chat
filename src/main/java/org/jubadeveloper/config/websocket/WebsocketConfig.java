@@ -13,6 +13,7 @@ import org.springframework.web.socket.config.annotation.WebSocketHandlerRegistry
 @EnableWebSocket
 public class WebsocketConfig implements WebSocketConfigurer {
     @Autowired WebsocketAdapter websocketAdapter;
+    @Autowired WebsocketAuthHandshake websocketAuthHandshake;
     @Bean
     WebsocketAdapter websocketHandler () {
         return new WebsocketAdapter();
@@ -21,6 +22,7 @@ public class WebsocketConfig implements WebSocketConfigurer {
     public void registerWebSocketHandlers(WebSocketHandlerRegistry registry) {
         registry
                 .addHandler(websocketAdapter, "/*")
+                .addInterceptors(websocketAuthHandshake)
                 .setAllowedOriginPatterns("*");
     }
 }

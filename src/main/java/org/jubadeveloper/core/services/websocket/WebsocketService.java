@@ -18,4 +18,5 @@ public class WebsocketService {
             logger.info("New client message: " + message);
         });
     }
+
 }
