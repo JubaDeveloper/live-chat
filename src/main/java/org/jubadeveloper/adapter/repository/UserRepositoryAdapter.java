@@ -24,14 +24,15 @@ public class UserRepositoryAdapter implements UserRepositoryPort {
 
     @Override
     public User updateUser(String email, User newUser) throws UserNotFoundException {
-        return userRepository
+        return userRepository.save(userRepository
                 .findById(email)
                 .map(user -> {
                     user.setEmail(newUser.getEmail());
                     user.setUsername(newUser.getUsername());
+                    user.setChannels(newUser.getChannels());
                     return user;
                 })
-                .orElseThrow(() -> new UserNotFoundException(email));
+                .orElseThrow(() -> new UserNotFoundException(email)));
     }
 
     @Override

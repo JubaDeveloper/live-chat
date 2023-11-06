@@ -2,29 +2,35 @@ package org.jubadeveloper.core.domain;
 
 import jakarta.annotation.Nonnull;
 import jakarta.annotation.Nullable;
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 import org.hibernate.annotations.ColumnDefault;
 import org.springframework.boot.context.properties.bind.DefaultValue;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity()
 @Table(name = "'User'")
 public class User {
     @Id
-    String email;
+    private String email;
     @Column(nullable = false)
-    String username = "";
+    private String username = "";
     @ColumnDefault("sysdate")
     @Column(nullable = false, updatable = false)
-    LocalDate createdAt = LocalDate.now();
-    public User () {}
+    private LocalDate createdAt = LocalDate.now();
+    @ManyToMany(targetEntity = Channel.class,
+            cascade = {CascadeType.PERSIST},
+            fetch = FetchType.EAGER)
+    private List<Channel> channels;
+    public User () {
+        channels = new ArrayList<>();
+    }
     public User (String email, String username) {
         this.email = email;
         this.username = username;
+        channels = new ArrayList<>();
     }
     public String getEmail() {
         return email;
@@ -32,6 +38,14 @@ public class User {
 
     public void setEmail(String email) {
         this.email = email;
+    }
+
+    public List<Channel> getChannels() {
+        return channels;
+    }
+
+    public void setChannels(List<Channel> channels) {
+        this.channels = channels;
     }
 
     public String getUsername() {
