@@ -20,12 +20,11 @@ public class User {
     String username = "";
     @ColumnDefault("sysdate")
     @Column(nullable = false, updatable = false)
-    LocalDate createdAt;
+    LocalDate createdAt = LocalDate.now();
     public User () {}
-    public User (String email, String username, LocalDate createdAt) {
+    public User (String email, String username) {
         this.email = email;
         this.username = username;
-        this.createdAt = createdAt;
     }
     public String getEmail() {
         return email;

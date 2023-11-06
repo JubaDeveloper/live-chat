@@ -1,6 +1,4 @@
 spring:
-  config:
-    # active.on-profile: prod
   graphql:
     graphiql:
       enabled: true
