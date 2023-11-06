@@ -1,0 +1,27 @@
+spring:
+  config:
+    # active.on-profile: prod
+  graphql:
+    graphiql:
+      enabled: true
+  devtools:
+    restart:
+      enabled: true
+    livereload:
+      enabled: false
+  datasource:
+    url: "jdbc:oracle:thin:@(description=(retry_count=20)(retry_delay=3)(address=(protocol=tcps)(port=1522)(host=adb.sa-saopaulo-1.oraclecloud.com))(connect_data=(service_name=g4a7b67d69219fb_dvb8kaj7v2djsdsx_high.adb.oraclecloud.com))(security=(ssl_server_dn_match=yes)))"
+    username: "ADMIN" # Test env
+    password: "Juba2019#database" # Test env
+    driver-class-name=oracle: oracle.jdbc.OracleDriver
+  jooq:
+    sql-dialect: "org.hibernate.dialect.Oracle10gDialect"
+  jpa:
+    hibernate:
+      ddl-auto: "create-drop"
+    show-sql: true
+provider: "org.hibernate.jpa.HibernatePersistenceProvider"
+server:
+  port: 3000
+properties:
+  private_key: "5023023010231231325"
