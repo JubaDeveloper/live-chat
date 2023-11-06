@@ -3,6 +3,7 @@ package org.jubadeveloper.adapter.repository;
 import org.jubadeveloper.core.domain.User;
 import org.jubadeveloper.core.ports.UserRepositoryPort;
 import org.jubadeveloper.several.exceptions.UserAlreadyExistsException;
+import org.jubadeveloper.several.exceptions.UserNotFoundException;
 import org.jubadeveloper.several.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -22,31 +23,29 @@ public class UserRepositoryAdapter implements UserRepositoryPort {
     }
 
     @Override
-    public User updateUser(String email, User newUser) throws UserAlreadyExistsException {
-//        userRepository
-//                .findById(email)
-//                .map(user -> {
-//                    user.setEmail(newUser.getEmail());
-//                    user.setUsername(newUser.getUsername());
-//                    return user;
-//                })
-//                .orElseThrow(() -> new UserAlreadyExistsException());
-        return null;
+    public User updateUser(String email, User newUser) throws UserNotFoundException {
+        return userRepository
+                .findById(email)
+                .map(user -> {
+                    user.setEmail(newUser.getEmail());
+                    user.setUsername(newUser.getUsername());
+                    return user;
+                })
+                .orElseThrow(() -> new UserNotFoundException(email));
     }
 
     @Override
-    public User getUser(String email) throws UserAlreadyExistsException {
-        return null;
-//        return userRepository
-//                .findById(email)
-//                .orElseThrow(() -> new UserAlreadyExistsException());
+    public User getUser(String email) throws UserNotFoundException {
+        return userRepository
+                .findById(email)
+                .orElseThrow(() -> new UserNotFoundException(email));
     }
 
     @Override
-    public void deleteUser(String email) throws UserAlreadyExistsException {
-//        userRepository
-//                .findById(email)
-//                .orElseThrow(() ->  new UserAlreadyExistsException());
-//        userRepository.deleteById(email);
+    public void deleteUser(String email) throws UserNotFoundException {
+        userRepository
+                .findById(email)
+                .orElseThrow(() ->  new UserNotFoundException(email));
+        userRepository.deleteById(email);
     }
 }
