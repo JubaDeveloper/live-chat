@@ -7,6 +7,7 @@ import org.jubadeveloper.several.exceptions.UserNotFoundException;
 import org.jubadeveloper.several.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import java.util.List;
 import java.util.Optional;
 
 public class UserRepositoryAdapter implements UserRepositoryPort {
@@ -24,15 +25,15 @@ public class UserRepositoryAdapter implements UserRepositoryPort {
 
     @Override
     public User updateUser(String email, User newUser) throws UserNotFoundException {
-        return userRepository.save(userRepository
+        return userRepository
                 .findById(email)
                 .map(user -> {
                     user.setEmail(newUser.getEmail());
                     user.setUsername(newUser.getUsername());
                     user.setChannels(newUser.getChannels());
-                    return user;
+                    return userRepository.save(user);
                 })
-                .orElseThrow(() -> new UserNotFoundException(email)));
+                .orElseThrow(() -> new UserNotFoundException(email));
     }
 
     @Override
@@ -40,6 +41,11 @@ public class UserRepositoryAdapter implements UserRepositoryPort {
         return userRepository
                 .findById(email)
                 .orElseThrow(() -> new UserNotFoundException(email));
+    }
+
+    @Override
+    public List<User> getAllUsers() {
+        return userRepository.findAll();
     }
 
     @Override

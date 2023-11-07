@@ -1,0 +1,49 @@
+type User {
+    email: ID!
+    username: String!
+    channels: [Channel]
+}
+
+type Channel {
+    id: ID!
+    name: String
+    owner: User
+    users: [User]
+}
+
+input ChannelUserInput {
+    email: String!
+}
+
+input ChannelInput {
+    name: String
+    creatorId: String
+}
+
+input ChannelInputUser {
+    id: ID!
+}
+
+input UserInput {
+    email: ID!
+    username: String!
+    channels: [ChannelInputUser]
+}
+
+input UserInputCreation {
+    email: ID!
+    username: String!
+    channels: [ChannelInputUser]
+}
+
+type Query {
+    getAllUsers:[User]
+    getChannels: [Channel]
+}
+
+type Mutation {
+    insertUser(user: UserInputCreation): User
+    updateUser(email: ID!, newUser: UserInputCreation): User
+    insertChannel(channel: ChannelInput): Channel
+    updateChannel(id: ID!, newChannel: ChannelInput): Channel
+}

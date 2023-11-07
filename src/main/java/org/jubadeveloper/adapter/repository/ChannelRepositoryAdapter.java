@@ -27,7 +27,8 @@ public class ChannelRepositoryAdapter implements ChannelRepositoryPort {
     public Channel updateChannel(Long id, Channel newChannel) throws ChannelNotFoundException {
         Channel channel = channelRepository.findById(id).orElseThrow(() -> new ChannelNotFoundException(id));
         channel.setUsers(newChannel.getUsers());
-        channel.setCreator(newChannel.getCreator());
+        channel.setCreatorId(newChannel.getCreatorId());
+        channel.setName(newChannel.getName());
         return channelRepository.save(channel);
     }
 

@@ -25,11 +25,12 @@ public class UserChannelCreationContextTest {
         User createdUser = userService.createUser(user);
         List<Channel> userChannels = createdUser.getChannels();
         // Creating user channel
-        Channel channel = new Channel(createdUser);
+        Channel channel = new Channel(createdUser.getEmail(), "My test channel");
         userChannels.add(channel);
         createdUser.setChannels(userChannels);
         createdUser = userService.updateUser(createdUser.getEmail(), createdUser);
         System.out.println("User channel size: " + createdUser.getChannels().size());
         assertThat(userService.getChannelsByUser(createdUser)).hasSize(1);
+        assertThat(userService.getUser(createdUser.getEmail()).getChannels()).hasSize(1);
     }
 }

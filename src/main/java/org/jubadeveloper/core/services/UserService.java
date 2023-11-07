@@ -31,6 +31,11 @@ public class UserService implements UserServiceContract {
     }
 
     @Override
+    public List<User> getAllUsers() {
+        return userRepositoryPort.getAllUsers();
+    }
+
+    @Override
     public User updateUser(String email, User newUser) throws UserNotFoundException {
         return userRepositoryPort.updateUser(email, newUser);
     }
@@ -43,7 +48,7 @@ public class UserService implements UserServiceContract {
                 .filter(channel -> channel.getUsers()
                         .stream()
                         .filter(user1 -> user1.getEmail().equals(user.getEmail())).
-                        toList().size() == 1)
+                        toList().size() > 0)
                 .toList();
     }
 }

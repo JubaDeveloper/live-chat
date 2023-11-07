@@ -1,4 +1,4 @@
-package org.jubadeveloper.core.services.contracts;
+package org.jubadeveloper.actors.controller.graphql.contracts;
 
 import org.jubadeveloper.core.domain.Channel;
 import org.jubadeveloper.core.domain.User;
@@ -7,10 +7,9 @@ import org.jubadeveloper.several.exceptions.UserNotFoundException;
 
 import java.util.List;
 
-public interface UserServiceContract {
-    User createUser (User user) throws UserAlreadyExistsException;
-    User getUser (String email) throws UserNotFoundException;
-    List<User> getAllUsers ();
+public interface UserControllerGraphQLContract {
+    User insertUser (User user) throws UserAlreadyExistsException;
     User updateUser (String email, User newUser) throws UserNotFoundException;
-    List<Channel> getChannelsByUser (User user);
+    List<User> getAllUsers();
+    List<Channel> channels (User user);
 }

@@ -8,12 +8,11 @@ import java.util.List;
 @Entity
 public class Channel {
     @Id
-    @GeneratedValue(strategy = GenerationType.SEQUENCE)
+    @GeneratedValue
     private Long id;
-    @ManyToOne(targetEntity = User.class, cascade = CascadeType.ALL)
-    @JoinColumn(name = "user_email",
-            foreignKey = @ForeignKey(name = "USER_EMAIL_FK"))
-    private User creator;
+    private String name;
+    @Column(nullable = true)
+    private String creatorId;
     @ManyToMany(mappedBy = "channels",
             targetEntity = User.class,
             fetch = FetchType.EAGER
@@ -22,10 +21,20 @@ public class Channel {
     public Channel () {
         users = new ArrayList<>();
     }
-    public Channel(User creator) {
-        this.creator = creator;
+    public Channel(String creatorId, String name) {
+        this.creatorId = creatorId;
+        this.name = name;
         users = new ArrayList<>();
     }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
 
     public Long getId() {
         return id;
@@ -35,12 +44,12 @@ public class Channel {
         this.id = id;
     }
 
-    public User getCreator() {
-        return creator;
+    public String getCreatorId() {
+        return creatorId;
     }
 
-    public void setCreator(User creator) {
-        this.creator = creator;
+    public void setCreatorId(String creatorId) {
+        this.creatorId = creatorId;
     }
 
     public List<User> getUsers() {
