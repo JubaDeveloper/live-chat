@@ -16,7 +16,7 @@ public class AuthenticatedPathInterceptor implements HandlerInterceptor {
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
         String authToken = request.getHeader("Authorization");
-        if (authToken != null) {
+        if (authToken != null && !authToken.equals("")) {
             String token = authService.getAuthToken(authToken);
             // Refresh token and pass the newer to controller
             String userId = authService.checkAuth(token);

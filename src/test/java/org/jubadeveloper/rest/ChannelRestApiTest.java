@@ -17,6 +17,7 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
 import org.assertj.core.api.Assertions.*;
+import org.springframework.web.client.ResourceAccessException;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @TestMethodOrder(MethodOrderer.MethodName.class)
@@ -61,5 +62,22 @@ public class ChannelRestApiTest {
         Assertions.assertThat(createdChannel).isNotNull();
         Assertions.assertThat(createdChannel.getCreatorId()).isEqualTo(channel.getCreatorId());
         Assertions.assertThat(createdChannel.getName()).isEqualTo(channel.getName());
+    }
+    @Test
+    @Order(2)
+    void rejectOnUserNotAuthenticated () {
+        String urlChannelCreation = String.format(urlPattern, "localhost", serverPort, "panel/api/channel");
+        HttpHeaders httpHeaders = new HttpHeaders();
+        httpHeaders.set("Authorization", "");
+        Channel channel = new Channel(mockUser.getEmail(), "Mock channel test");
+        HttpEntity<Channel> httpEntity = new HttpEntity<>(channel, httpHeaders);
+        boolean throwed = false;
+        try {
+            testRestTemplate.exchange(urlChannelCreation,
+                    HttpMethod.POST,
+                    httpEntity,
+                    String.class);
+        } catch (ResourceAccessException resourceAccessException) {throwed = true;}
+        Assertions.assertThat(throwed).isTrue();
     }
 }
