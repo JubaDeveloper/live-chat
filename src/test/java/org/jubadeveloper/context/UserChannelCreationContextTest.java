@@ -21,7 +21,7 @@ public class UserChannelCreationContextTest {
     @Test
     public void testCreateUserChannel () throws Exception {
         // Creation user
-        User user = new User("juba@gmail.com", "jubadev");
+        User user = new User("juba@gmail.com", "jubadev", "juba");
         User createdUser = userService.createUser(user);
         List<Channel> userChannels = createdUser.getChannels();
         // Creating user channel

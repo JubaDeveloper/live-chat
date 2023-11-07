@@ -17,6 +17,8 @@ public class User {
     private String email;
     @Column(nullable = false)
     private String username = "";
+    @Column(nullable = false)
+    private String password;
     @ColumnDefault("sysdate")
     @Column(nullable = false, updatable = false)
     private LocalDate createdAt = LocalDate.now();
@@ -27,9 +29,10 @@ public class User {
     public User () {
         channels = new ArrayList<>();
     }
-    public User (String email, String username) {
+    public User (String email, String username, String password) {
         this.email = email;
         this.username = username;
+        this.password = password;
         channels = new ArrayList<>();
     }
     public String getEmail() {
@@ -62,5 +65,13 @@ public class User {
 
     public void setCreatedAt(LocalDate createdAt) {
         this.createdAt = createdAt;
+    }
+
+    public String getPassword() {
+        return password;
+    }
+
+    public void setPassword(String password) {
+        this.password = password;
     }
 }

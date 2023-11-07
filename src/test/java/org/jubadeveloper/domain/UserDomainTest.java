@@ -23,7 +23,7 @@ public class UserDomainTest {
 
     @Test
     public void testUserCreation () throws UserAlreadyExistsException {
-        User user = userService.createUser(new User("juba@gmail.com", "juba silva"));
+        User user = userService.createUser(new User("juba@gmail.com", "juba silva", "juba"));
         assertThat(user.getEmail()).isEqualTo("juba@gmail.com");
     }
 }

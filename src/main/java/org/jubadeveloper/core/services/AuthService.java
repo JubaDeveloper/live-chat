@@ -5,7 +5,9 @@ import org.jubadeveloper.core.ports.AuthenticatorPort;
 import org.jubadeveloper.core.services.contracts.AuthServiceContract;
 import org.jubadeveloper.several.exceptions.AuthenticationException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
+@Service
 public class AuthService implements AuthServiceContract {
     @Autowired
     AuthenticatorPort authenticatorPort;
