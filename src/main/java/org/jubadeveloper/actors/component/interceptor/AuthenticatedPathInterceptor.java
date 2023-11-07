@@ -7,15 +7,19 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.HandlerInterceptor;
 
+import java.util.Enumeration;
+import java.util.List;
+
 @Component
 public class AuthenticatedPathInterceptor implements HandlerInterceptor {
-    AuthService authService;
+    @Autowired AuthService authService;
     public AuthenticatedPathInterceptor (@Autowired AuthService authService) {
         this.authService = authService;
     }
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
-        String authToken = request.getHeader("Authorization");
+        Enumeration<String> cookies = request.getHeaders("cookie");
+        String authToken = AuthService.getTokenFromCookies(cookies);
         if (authToken != null && !authToken.equals("")) {
             String token = authService.getAuthToken(authToken);
             // Refresh token and pass the newer to controller
@@ -23,7 +27,7 @@ public class AuthenticatedPathInterceptor implements HandlerInterceptor {
             request.setAttribute("email", userId);
             if (userId != null) {
                 String newToken = authService.updateToken(token);
-                response.setHeader("Authorization", String.format("Bearer %s", newToken));
+                response.setHeader("Set-Cookie", "X-Authorization=" +  String.format("%s", newToken) + ";");
                 return true;
             }
         }

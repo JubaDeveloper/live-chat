@@ -60,6 +60,6 @@ public class AuthenticatorAdapter implements AuthenticatorPort {
     }
     @Override
     public String getAuthRequest (String authHeader) {
-        return authHeader.split(" ")[1];
+        return authHeader.split(" ")[0];
     }
 }

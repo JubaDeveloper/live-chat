@@ -32,8 +32,8 @@ public class UserRestController implements UserRestControllerContract {
             if (user1.getPassword().equals(user.getPassword())) {
                 String authToken = authService.auth(user1);
                 HttpHeaders responseHeaders = new HttpHeaders();
-                responseHeaders.set("Authorization",
-                        String.format("Bearer %s", authToken));
+                responseHeaders.set("Set-Cookie",
+                         "X-Authorization=" + String.format("%s", authToken) + ";");
                 return ResponseEntity
                         .ok()
                         .headers(responseHeaders)

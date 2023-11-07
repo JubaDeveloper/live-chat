@@ -5,6 +5,7 @@ import org.apache.logging.log4j.Logger;
 import org.assertj.core.api.Assertions;
 import org.jubadeveloper.core.domain.Channel;
 import org.jubadeveloper.core.domain.User;
+import org.jubadeveloper.core.services.AuthService;
 import org.jubadeveloper.several.repository.ChannelRepository;
 import org.jubadeveloper.several.repository.UserRepository;
 import org.junit.jupiter.api.*;
@@ -18,6 +19,8 @@ import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
 import org.assertj.core.api.Assertions.*;
 import org.springframework.web.client.ResourceAccessException;
+
+import java.util.List;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @TestMethodOrder(MethodOrderer.MethodName.class)
@@ -45,11 +48,13 @@ public class ChannelRestApiTest {
         String urlUserLogin = String.format(urlPattern, "localhost", serverPort, "api/user/login");
         ResponseEntity<User> userLoginResponse = testRestTemplate.postForEntity(urlUserLogin, mockUser, User.class);
         Assertions.assertThat(userLoginResponse.getStatusCode().value()).isEqualTo(200); // Successfully logged in
-        String authToken = userLoginResponse.getHeaders().getFirst("Authorization");
+        List<String> cookies = userLoginResponse.getHeaders().get("Set-Cookie");
+        Assertions.assertThat(cookies).isNotNull();
+        String authToken = AuthService.getTokenFromCookies(cookies);
         Assertions.assertThat(authToken).isNotNull();
         String urlChannelCreation = String.format(urlPattern, "localhost", serverPort, "panel/api/channel");
         HttpHeaders httpHeaders = new HttpHeaders();
-        httpHeaders.set("Authorization", authToken);
+        httpHeaders.set("cookie", "X-Authorization=" + authToken + ";");
         Channel channel = new Channel(mockUser.getEmail(), "Mock channel test");
         HttpEntity<Channel> httpEntity = new HttpEntity<>(channel, httpHeaders);
         ResponseEntity<Channel> channelCreationResponse = testRestTemplate.exchange(urlChannelCreation,
@@ -68,7 +73,7 @@ public class ChannelRestApiTest {
     void rejectOnUserNotAuthenticated () {
         String urlChannelCreation = String.format(urlPattern, "localhost", serverPort, "panel/api/channel");
         HttpHeaders httpHeaders = new HttpHeaders();
-        httpHeaders.set("Authorization", "");
+        httpHeaders.set("cookie", "X-Authorization=;");
         Channel channel = new Channel(mockUser.getEmail(), "Mock channel test");
         HttpEntity<Channel> httpEntity = new HttpEntity<>(channel, httpHeaders);
         boolean throwed = false;

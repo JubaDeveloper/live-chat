@@ -7,6 +7,9 @@ import org.jubadeveloper.several.exceptions.AuthenticationException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.Enumeration;
+import java.util.List;
+
 @Service
 public class AuthService implements AuthServiceContract {
     @Autowired
@@ -29,5 +32,38 @@ public class AuthService implements AuthServiceContract {
     @Override
     public String getAuthToken(String authToken) {
         return authenticatorPort.getAuthRequest(authToken);
+    }
+
+    public static String getTokenFromCookies(Enumeration<String> cookies) {
+        String authToken = null;
+        while (cookies.hasMoreElements()) {
+            String cookie = cookies.nextElement();
+            String[] splitCookies = cookie.split("=");
+            if (splitCookies[0].equals("X-Authorization")) {
+                String[] values = splitCookies[1].split(";");
+                if (values.length == 0) {
+                    authToken = null;
+                } else {
+                    authToken = values[0];
+                }
+            }
+        }
+        return authToken;
+    }
+
+    public static String getTokenFromCookies (List<String> cookies) {
+        String authToken = null;
+        for (String cookie: cookies) {
+            String[] splitCookies = cookie.split("=");
+            if (splitCookies[0].equals("X-Authorization")) {
+                String[] values = splitCookies[1].split(";");
+                if (values.length == 0) {
+                    authToken = null;
+                } else {
+                    authToken = values[0];
+                }
+            }
+        }
+        return authToken;
     }
 }

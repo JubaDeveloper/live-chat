@@ -2,7 +2,7 @@ package org.jubadeveloper.config.websocket;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.jubadeveloper.core.services.websocket.auth.WebsocketAuthService;
+import org.jubadeveloper.core.services.AuthService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.server.ServerHttpRequest;
 import org.springframework.http.server.ServerHttpResponse;
@@ -17,15 +17,16 @@ import java.util.Map;
 public class WebsocketAuthHandshake implements HandshakeInterceptor {
     Logger logger = LogManager.getLogger(WebsocketAuthHandshake.class);
     @Autowired
-    WebsocketAuthService websocketAuthService;
+    AuthService authService;
     @Override
     public boolean beforeHandshake(ServerHttpRequest request, ServerHttpResponse response, WebSocketHandler wsHandler, Map<String, Object> attributes) throws Exception {
         // We should verify token and validate it
         List<String> cookies = request.getHeaders().get("cookie");
         if (cookies != null) {
-            return websocketAuthService.validateAuthToken(websocketAuthService.getAuthTokenFromCookies(cookies));
+            authService.checkAuth(AuthService.getTokenFromCookies(cookies));
+            return true;
         }
-        return websocketAuthService.validateAuthToken(null);
+        return false;
     }
 
     @Override
