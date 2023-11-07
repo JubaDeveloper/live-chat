@@ -2,18 +2,29 @@ package org.jubadeveloper.actors.controller.rest;
 
 import org.jubadeveloper.actors.controller.rest.contracts.ChannelRestControllerContract;
 import org.jubadeveloper.core.domain.Channel;
+import org.jubadeveloper.core.domain.User;
 import org.jubadeveloper.core.services.ChannelService;
+import org.jubadeveloper.core.services.UserService;
 import org.jubadeveloper.several.exceptions.ChannelNotFoundException;
+import org.jubadeveloper.several.exceptions.UserNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RestController;
+
+import java.util.List;
 
 @RestController
 public class ChannelRestController implements ChannelRestControllerContract {
     @Autowired
     ChannelService channelService;
+    @Autowired
+    UserService userService;
     @Override
-    public Channel apiCreateChannel(String userEmail, Channel channel) {
+    public Channel apiCreateChannel(String userEmail, Channel channel) throws UserNotFoundException {
         channel.setCreatorId(userEmail);
+        User user = userService.getUser(userEmail);
+        List<User> channelMembers = channel.getUsers();
+        channelMembers.add(user);
+        channel.setUsers(channelMembers);
         return channelService.createChannel(channel);
     }
 
