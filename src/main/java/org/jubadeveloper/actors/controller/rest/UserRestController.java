@@ -13,6 +13,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.net.http.HttpResponse;
+import java.util.ArrayList;
+import java.util.List;
 
 @RestController
 public class UserRestController implements UserRestControllerContract {
@@ -34,6 +36,8 @@ public class UserRestController implements UserRestControllerContract {
                 HttpHeaders responseHeaders = new HttpHeaders();
                 responseHeaders.set("Set-Cookie",
                          "X-Authorization=" + String.format("%s", authToken) + ";path=/");
+                responseHeaders.set("Authorization",
+                        authToken);
                 return ResponseEntity
                         .ok()
                         .headers(responseHeaders)

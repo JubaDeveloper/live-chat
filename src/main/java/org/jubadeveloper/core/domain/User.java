@@ -1,5 +1,6 @@
 package org.jubadeveloper.core.domain;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.annotation.Nonnull;
 import jakarta.annotation.Nullable;
 import jakarta.persistence.*;
@@ -12,6 +13,7 @@ import java.util.List;
 
 @Entity()
 @Table(name = "'User'")
+@JsonIgnoreProperties({ "channels", "hibernateLazyInitializer", "handler" })
 public class User {
     @Id
     private String email;
@@ -73,5 +75,10 @@ public class User {
 
     public void setPassword(String password) {
         this.password = password;
+    }
+
+    @Override
+    public String toString() {
+        return String.format("User { email=%s, username=%s, password=%s }", this.getEmail(), this.getUsername(), this.getPassword());
     }
 }
