@@ -36,8 +36,6 @@ public class UserRestController implements UserRestControllerContract {
                 HttpHeaders responseHeaders = new HttpHeaders();
                 responseHeaders.set("Set-Cookie",
                          "X-Authorization=" + String.format("%s", authToken) + ";path=/");
-                responseHeaders.set("Authorization",
-                        authToken);
                 return ResponseEntity
                         .ok()
                         .headers(responseHeaders)
