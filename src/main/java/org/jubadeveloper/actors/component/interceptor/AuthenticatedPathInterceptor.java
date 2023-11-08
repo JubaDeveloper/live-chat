@@ -27,7 +27,7 @@ public class AuthenticatedPathInterceptor implements HandlerInterceptor {
             request.setAttribute("email", userId);
             if (userId != null) {
                 String newToken = authService.updateToken(token);
-                response.setHeader("Set-Cookie", "X-Authorization=" +  String.format("%s", newToken) + ";");
+                response.setHeader("Set-Cookie", "X-Authorization=" +  String.format("%s", newToken) + ";path=/");
                 return true;
             }
         }

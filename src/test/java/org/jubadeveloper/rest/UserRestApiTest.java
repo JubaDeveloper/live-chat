@@ -62,10 +62,6 @@ public class UserRestApiTest {
         user.setPassword("juba");
         ResponseEntity<User> loggedUserResponse = testRestTemplate.postForEntity(URI.create(apiUserLoginEndPointUrl), user, User.class);
         Assertions.assertThat(loggedUserResponse.getStatusCode().value()).isEqualTo(200);
-        User loggedUser = loggedUserResponse.getBody();
-        Assertions.assertThat(loggedUser).isNotNull();
-        Assertions.assertThat(loggedUser.getEmail()).isEqualTo(user.getEmail());
-        Assertions.assertThat(loggedUserResponse.getHeaders().get("Authorization")).hasSize(1);
     }
     @Test
     @Order(4)

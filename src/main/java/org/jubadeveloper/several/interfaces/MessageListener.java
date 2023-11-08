@@ -1,5 +1,7 @@
 package org.jubadeveloper.several.interfaces;
 
+import org.jubadeveloper.core.domain.User;
+
 public interface MessageListener {
-    void onMessage (String message);
+    void onMessage (User user, String message);
 }

@@ -21,7 +21,7 @@ public class WebsocketConfig implements WebSocketConfigurer {
     @Override
     public void registerWebSocketHandlers(WebSocketHandlerRegistry registry) {
         registry
-                .addHandler(websocketAdapter, "/channel/*")
+                .addHandler(websocketAdapter, "/channel/{id}")
                 .addInterceptors(websocketAuthHandshake)
                 .setAllowedOriginPatterns("*");
     }

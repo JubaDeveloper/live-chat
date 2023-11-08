@@ -3,9 +3,6 @@ package org.jubadeveloper.core.services.contracts;
 import org.jubadeveloper.core.domain.User;
 import org.jubadeveloper.several.exceptions.AuthenticationException;
 
-import java.util.Enumeration;
-import java.util.List;
-
 public interface AuthServiceContract {
     String auth (User user);
     String checkAuth (String token) throws AuthenticationException;

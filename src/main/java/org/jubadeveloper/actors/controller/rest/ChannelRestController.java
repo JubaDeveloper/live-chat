@@ -22,10 +22,11 @@ public class ChannelRestController implements ChannelRestControllerContract {
     public Channel apiCreateChannel(String userEmail, Channel channel) throws UserNotFoundException {
         channel.setCreatorId(userEmail);
         User user = userService.getUser(userEmail);
-        List<User> channelMembers = channel.getUsers();
-        channelMembers.add(user);
-        channel.setUsers(channelMembers);
-        return channelService.createChannel(channel);
+        List<Channel> userChannels = user.getChannels();
+        userChannels.add(channel);
+        user.setChannels(userChannels);
+        userService.updateUser(user.getEmail(), user);
+        return channel;
     }
 
     @Override

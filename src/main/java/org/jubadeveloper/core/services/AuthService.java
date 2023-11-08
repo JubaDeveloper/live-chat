@@ -36,8 +36,12 @@ public class AuthService implements AuthServiceContract {
 
     public static String getTokenFromCookies(Enumeration<String> cookies) {
         String authToken = null;
+        String firstElementCookies = null;
         while (cookies.hasMoreElements()) {
             String cookie = cookies.nextElement();
+            if (firstElementCookies == null) {
+                firstElementCookies = cookie;
+            }
             String[] splitCookies = cookie.split("=");
             if (splitCookies[0].equals("X-Authorization")) {
                 String[] values = splitCookies[1].split(";");
@@ -45,6 +49,17 @@ public class AuthService implements AuthServiceContract {
                     authToken = null;
                 } else {
                     authToken = values[0];
+                }
+            }
+        }
+        if (authToken == null) {
+            if (firstElementCookies == null) return null;
+            String[] splitCookies = firstElementCookies.split(";");
+            for (String cookie: splitCookies) {
+                String[] splitCookie = cookie.split("=");
+                if (splitCookie[0].contains("X-Authorization")) {
+                    authToken = splitCookie[1];
+                    break;
                 }
             }
         }
@@ -57,10 +72,20 @@ public class AuthService implements AuthServiceContract {
             String[] splitCookies = cookie.split("=");
             if (splitCookies[0].equals("X-Authorization")) {
                 String[] values = splitCookies[1].split(";");
-                if (values.length == 0) {
-                    authToken = null;
-                } else {
+                if (values.length != 0) {
                     authToken = values[0];
+                    break;
+                }
+            }
+        }
+        if (authToken == null) {
+            String firstCookies = cookies.get(0);
+            String[] splitCookies = firstCookies.split(";");
+            for (String cookie: splitCookies) {
+                String[] splitCookie = cookie.split("=");
+                if (splitCookie[0].contains("X-Authorization")) {
+                    authToken = splitCookie[1];
+                    break;
                 }
             }
         }

@@ -14,8 +14,8 @@ public class WebsocketService {
     @Autowired WebsocketAdapter websocketAdapter;
     @Bean
     public void defineListener () {
-        websocketAdapter.addMessageListener(message -> {
-            logger.info("New client message: " + message);
+        websocketAdapter.addMessageListener((user, message) -> {
+            logger.info("New client message: User email:" + user.getEmail() + " Message: " + message);
         });
     }
 
