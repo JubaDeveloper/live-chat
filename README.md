@@ -30,6 +30,7 @@ server:
   port: 3000
 properties:
   private_key: $KEY
+  serverUrl: $SERVER_URL
 ```
 
 
