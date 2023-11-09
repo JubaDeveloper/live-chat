@@ -6,6 +6,7 @@ import org.assertj.core.api.Assertions;
 import org.jubadeveloper.core.domain.User;
 import org.jubadeveloper.core.services.UserService;
 import org.jubadeveloper.several.exceptions.UserAlreadyExistsException;
+import org.jubadeveloper.several.repository.ChannelRepository;
 import org.jubadeveloper.several.repository.UserRepository;
 import org.junit.jupiter.api.*;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,8 +28,11 @@ public class UserRestApiTest {
     @LocalServerPort
     int serverPort;
     @BeforeAll
-    static void releaseDatabaseToMyUse (@Autowired UserRepository userRepository) {
+    public static void releaseDatabaseToMyUse (
+            @Autowired UserRepository userRepository,
+            @Autowired ChannelRepository channelRepository) {
         userRepository.deleteAll();
+        channelRepository.deleteAll();
     }
     @Test
     @Order(1)
