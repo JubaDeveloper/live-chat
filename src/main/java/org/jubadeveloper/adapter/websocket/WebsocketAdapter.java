@@ -1,6 +1,7 @@
 package org.jubadeveloper.adapter.websocket;
 
-import org.jubadeveloper.core.domain.Channel;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.jubadeveloper.core.domain.User;
 import org.jubadeveloper.core.ports.WebsocketPort;
 import org.jubadeveloper.core.services.AuthService;
@@ -12,10 +13,14 @@ import org.jubadeveloper.several.exceptions.UserNotFoundException;
 import org.jubadeveloper.several.interfaces.MessageListener;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import org.springframework.web.socket.CloseStatus;
 import org.springframework.web.socket.TextMessage;
+import org.springframework.web.socket.WebSocketMessage;
 import org.springframework.web.socket.WebSocketSession;
 import org.springframework.web.socket.handler.TextWebSocketHandler;
 
+import java.io.IOException;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -29,8 +34,10 @@ public class WebsocketAdapter extends TextWebSocketHandler implements WebsocketP
     UserService userService;
     @Autowired
     ChannelService channelService;
+    private volatile List<WebSocketSession> connections = new ArrayList<>();
+    private final Logger logger = LogManager.getLogger(WebsocketAdapter.class);
     @Override
-    protected void handleTextMessage(WebSocketSession session, TextMessage message) throws AuthenticationException, UserNotFoundException, ChannelNotFoundException {
+    protected void handleTextMessage(WebSocketSession session, TextMessage message) throws AuthenticationException, UserNotFoundException, ChannelNotFoundException, IOException {
         // Channel validation and user is did here
         String path = Objects.requireNonNull(session.getUri()).getPath();
         String[] splitPath = path.split("/");
@@ -44,10 +51,30 @@ public class WebsocketAdapter extends TextWebSocketHandler implements WebsocketP
             List<User> users = channelService.getChannelById(channelId)
                     .getUsers().stream().filter(user1 -> user1.getEmail().equals(user.getEmail()))
                     .toList();
-            if (users.size() > 0) {
-                this.messageListener.onMessage(user, message.getPayload());
+//            if (users.size() > 0) {
+//                this.messageListener.onMessage(user, message.getPayload());
+//            }
+            this.messageListener.onMessage(user, message.getPayload());
+            TextMessage textMessage = new TextMessage(user.getUsername() + ":" + LocalDate.now() + ":" + message.getPayload());
+            session.sendMessage(textMessage);
+            logger.info("Clients connected count: " + connections.size());
+            for (WebSocketSession webSocketSession: connections) {
+                if (webSocketSession.getId().equals(session.getId())) continue;
+                webSocketSession.sendMessage(textMessage);
             }
         }
+    }
+
+    @Override
+    public void afterConnectionEstablished(WebSocketSession session) throws Exception {
+        super.afterConnectionEstablished(session);
+        connections.add(session);
+    }
+
+    @Override
+    public void afterConnectionClosed(WebSocketSession session, CloseStatus status) throws Exception {
+        super.afterConnectionClosed(session, status);
+        connections.removeIf(webSocketSession -> webSocketSession.getId().equals(session.getId()));
     }
 
     @Override

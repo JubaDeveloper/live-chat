@@ -3,6 +3,7 @@ package org.jubadeveloper.adapter.repository;
 import org.jubadeveloper.core.domain.User;
 import org.jubadeveloper.core.ports.UserRepositoryPort;
 import org.jubadeveloper.several.exceptions.UserAlreadyExistsException;
+import org.jubadeveloper.several.exceptions.UserAlreadyExistsUsernameException;
 import org.jubadeveloper.several.exceptions.UserNotFoundException;
 import org.jubadeveloper.several.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,11 +15,15 @@ public class UserRepositoryAdapter implements UserRepositoryPort {
     @Autowired
     UserRepository userRepository;
     @Override
-    public User createUser(User user) throws UserAlreadyExistsException {
+    public User createUser(User user) throws UserAlreadyExistsException, UserAlreadyExistsUsernameException {
         // Validate if user already exists
         Optional<User> existentUser = userRepository.findById(user.getEmail());
-        if (existentUser.isEmpty()) {
+        Optional<User> existentUserUsername = userRepository.findByUsername(user.getUsername());
+        if (existentUser.isEmpty() && existentUserUsername.isEmpty()) {
             return userRepository.save(user);
+        }
+        if (existentUserUsername.isPresent()) {
+            throw new UserAlreadyExistsUsernameException(user.getUsername());
         }
         throw new UserAlreadyExistsException(user.getEmail());
     }

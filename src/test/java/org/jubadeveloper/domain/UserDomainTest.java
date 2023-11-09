@@ -3,6 +3,7 @@ package org.jubadeveloper.domain;
 import org.jubadeveloper.core.domain.User;
 import org.jubadeveloper.core.services.UserService;
 import org.jubadeveloper.several.exceptions.UserAlreadyExistsException;
+import org.jubadeveloper.several.exceptions.UserAlreadyExistsUsernameException;
 import org.jubadeveloper.several.repository.UserRepository;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
@@ -22,7 +23,7 @@ public class UserDomainTest {
     }
 
     @Test
-    public void testUserCreation () throws UserAlreadyExistsException {
+    public void testUserCreation () throws UserAlreadyExistsException, UserAlreadyExistsUsernameException {
         User user = userService.createUser(new User("juba@gmail.com", "juba silva", "juba"));
         assertThat(user.getEmail()).isEqualTo("juba@gmail.com");
     }

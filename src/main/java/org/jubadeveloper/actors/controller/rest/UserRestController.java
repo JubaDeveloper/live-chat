@@ -6,6 +6,7 @@ import org.jubadeveloper.core.services.AuthService;
 import org.jubadeveloper.core.services.UserService;
 import org.jubadeveloper.several.exceptions.InvalidLoginException;
 import org.jubadeveloper.several.exceptions.UserAlreadyExistsException;
+import org.jubadeveloper.several.exceptions.UserAlreadyExistsUsernameException;
 import org.jubadeveloper.several.exceptions.UserNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
@@ -23,7 +24,7 @@ public class UserRestController implements UserRestControllerContract {
     @Autowired
     AuthService authService;
     @Override
-    public User apiCreateUser(User user) throws UserAlreadyExistsException {
+    public User apiCreateUser(User user) throws UserAlreadyExistsException, UserAlreadyExistsUsernameException {
         return userService.createUser(user);
     }
 

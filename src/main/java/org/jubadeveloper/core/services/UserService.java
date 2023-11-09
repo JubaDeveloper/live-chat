@@ -7,6 +7,7 @@ import org.jubadeveloper.core.ports.ChannelRepositoryPort;
 import org.jubadeveloper.core.ports.UserRepositoryPort;
 import org.jubadeveloper.core.services.contracts.UserServiceContract;
 import org.jubadeveloper.several.exceptions.UserAlreadyExistsException;
+import org.jubadeveloper.several.exceptions.UserAlreadyExistsUsernameException;
 import org.jubadeveloper.several.exceptions.UserNotFoundException;
 import org.jubadeveloper.several.repository.ChannelRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,7 +22,7 @@ public class UserService implements UserServiceContract {
     @Autowired
     ChannelRepositoryPort channelRepositoryPort;
     @Override
-    public User createUser(User user) throws UserAlreadyExistsException {
+    public User createUser(User user) throws UserAlreadyExistsException, UserAlreadyExistsUsernameException {
         return userRepositoryPort.createUser(user);
     }
 

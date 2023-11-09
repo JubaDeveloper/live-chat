@@ -17,7 +17,7 @@ import java.util.List;
 public class User {
     @Id
     private String email;
-    @Column(nullable = false)
+    @Column(nullable = false, unique = true)
     private String username = "";
     @Column(nullable = false)
     private String password;

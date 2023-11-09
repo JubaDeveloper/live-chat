@@ -17,8 +17,11 @@ public interface ChannelRestControllerContract {
             MediaType.APPLICATION_JSON_VALUE
     })
     Channel apiCreateChannel (@RequestAttribute(value = "email") String userEmail, Channel channel) throws UserNotFoundException; // User should be passed through some auth method
-    @PutMapping("/channel/{id}")
-    Channel apiUpdateChannel (@RequestAttribute(value = "email")String userEmail, @PathVariable Long channelId, @RequestBody Channel channel) throws ChannelNotFoundException;
+    @PostMapping(value = "/channel/update/{id}", consumes = {
+            MediaType.APPLICATION_FORM_URLENCODED_VALUE,
+            MediaType.APPLICATION_JSON_VALUE
+    })
+    Channel apiUpdateChannel (@RequestAttribute(value = "email")String userEmail, @PathVariable(value = "id", name = "id") Long channelId, Channel channel) throws ChannelNotFoundException;
     @GetMapping("/channel/{id}")
     Channel apiGetChannel (@RequestAttribute(value = "email") String userEmail, @PathVariable Long channelId) throws ChannelNotFoundException;
     @GetMapping("/channels")

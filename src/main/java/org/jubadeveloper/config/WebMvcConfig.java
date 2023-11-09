@@ -15,6 +15,6 @@ public class WebMvcConfig implements WebMvcConfigurer {
                 .allowCredentials(true)
                 .exposedHeaders("*", "authorization", "content-type")
                 .allowedHeaders("*", "authorization", "content-type")
-                .allowedOrigins("http://127.0.0.1:5173");
+                .allowedOrigins("http://168.138.151.203", "http://168.138.151.203:80");
     }
 }

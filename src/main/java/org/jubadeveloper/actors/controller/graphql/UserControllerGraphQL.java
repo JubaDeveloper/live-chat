@@ -7,6 +7,7 @@ import org.jubadeveloper.core.domain.Channel;
 import org.jubadeveloper.core.domain.User;
 import org.jubadeveloper.core.services.UserService;
 import org.jubadeveloper.several.exceptions.UserAlreadyExistsException;
+import org.jubadeveloper.several.exceptions.UserAlreadyExistsUsernameException;
 import org.jubadeveloper.several.exceptions.UserNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.graphql.data.method.annotation.Argument;
@@ -24,7 +25,7 @@ public class UserControllerGraphQL implements UserControllerGraphQLContract {
     UserService userService;
     @Override
     @MutationMapping
-    public User insertUser (@Argument User user) throws UserAlreadyExistsException {
+    public User insertUser (@Argument User user) throws UserAlreadyExistsException, UserAlreadyExistsUsernameException {
         return userService.createUser(user);
     }
 
