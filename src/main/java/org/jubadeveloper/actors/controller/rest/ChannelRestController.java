@@ -23,7 +23,8 @@ public class ChannelRestController implements ChannelRestControllerContract {
         channel.setCreatorId(userEmail);
         User user = userService.getUser(userEmail);
         List<Channel> userChannels = user.getChannels();
-        userChannels.add(channel);
+        Channel createdChannel = channelService.createChannel(channel);
+        userChannels.add(createdChannel);
         user.setChannels(userChannels);
         userService.updateUser(user.getEmail(), user);
         return channel;
@@ -47,5 +48,10 @@ public class ChannelRestController implements ChannelRestControllerContract {
             return channel;
         }
         throw new ChannelNotFoundException(channelId);
+    }
+
+    @Override
+    public List<Channel> apiGetChannels() {
+        return channelService.getAllChannels();
     }
 }

@@ -11,6 +11,7 @@ public class Channel {
     @GeneratedValue
     private Long id;
     private String name;
+    private String description;
     @Column(nullable = true)
     private String creatorId;
     @ManyToMany(mappedBy = "channels",
@@ -21,10 +22,19 @@ public class Channel {
     public Channel () {
         users = new ArrayList<>();
     }
-    public Channel(String creatorId, String name) {
+    public Channel(String creatorId, String name, String description) {
         this.creatorId = creatorId;
         this.name = name;
+        this.description = description;
         users = new ArrayList<>();
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
     }
 
     public String getName() {

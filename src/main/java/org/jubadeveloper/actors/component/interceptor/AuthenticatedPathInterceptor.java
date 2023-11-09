@@ -20,6 +20,10 @@ public class AuthenticatedPathInterceptor implements HandlerInterceptor {
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
         Enumeration<String> cookies = request.getHeaders("cookie");
         String authToken = AuthService.getTokenFromCookies(cookies);
+        if (authToken == null) {
+            authToken = request.getHeader("Authorization");
+            System.out.println(authToken);
+        }
         if (authToken != null && !authToken.equals("")) {
             String token = authService.getAuthToken(authToken);
             // Refresh token and pass the newer to controller

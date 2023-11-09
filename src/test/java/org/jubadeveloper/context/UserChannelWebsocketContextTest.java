@@ -45,7 +45,7 @@ public class UserChannelWebsocketContextTest {
         userRepository.deleteAll();
         channelRepository.deleteAll();
         user = userRepository.save(new User("juba@gmail.com", "juba", "juba"));
-        Channel channelToSave = new Channel(user.getEmail(), "My test channel");
+        Channel channelToSave = new Channel(user.getEmail(), "My test channel", "Test");
         List<User> channelMembers = channelToSave.getUsers();
         channelMembers.add(user);
         channelToSave.setUsers(channelMembers);

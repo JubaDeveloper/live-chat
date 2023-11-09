@@ -55,7 +55,7 @@ public class ChannelRestApiTest {
         String urlChannelCreation = String.format(urlPattern, "localhost", serverPort, "panel/api/channel");
         HttpHeaders httpHeaders = new HttpHeaders();
         httpHeaders.set("cookie", "X-Authorization=" + authToken + ";");
-        Channel channel = new Channel(mockUser.getEmail(), "Mock channel test");
+        Channel channel = new Channel(mockUser.getEmail(), "Mock channel test", "Test");
         HttpEntity<Channel> httpEntity = new HttpEntity<>(channel, httpHeaders);
         ResponseEntity<Channel> channelCreationResponse = testRestTemplate.exchange(urlChannelCreation,
                         HttpMethod.POST,
@@ -74,7 +74,7 @@ public class ChannelRestApiTest {
         String urlChannelCreation = String.format(urlPattern, "localhost", serverPort, "panel/api/channel");
         HttpHeaders httpHeaders = new HttpHeaders();
         httpHeaders.set("cookie", "X-Authorization=;");
-        Channel channel = new Channel(mockUser.getEmail(), "Mock channel test");
+        Channel channel = new Channel(mockUser.getEmail(), "Mock channel test", "Test");
         HttpEntity<Channel> httpEntity = new HttpEntity<>(channel, httpHeaders);
         boolean throwed = false;
         try {
