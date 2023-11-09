@@ -2,6 +2,7 @@ package org.jubadeveloper.adapter.websocket;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.jubadeveloper.adapter.websocket.session.Session;
 import org.jubadeveloper.core.domain.User;
 import org.jubadeveloper.core.ports.WebsocketPort;
 import org.jubadeveloper.core.services.AuthService;
@@ -34,7 +35,7 @@ public class WebsocketAdapter extends TextWebSocketHandler implements WebsocketP
     UserService userService;
     @Autowired
     ChannelService channelService;
-    private volatile List<WebSocketSession> connections = new ArrayList<>();
+    private final List<Session> connections = new ArrayList<>();
     private final Logger logger = LogManager.getLogger(WebsocketAdapter.class);
     @Override
     protected void handleTextMessage(WebSocketSession session, TextMessage message) throws AuthenticationException, UserNotFoundException, ChannelNotFoundException, IOException {
@@ -58,9 +59,9 @@ public class WebsocketAdapter extends TextWebSocketHandler implements WebsocketP
             TextMessage textMessage = new TextMessage(user.getUsername() + ":" + LocalDate.now() + ":" + message.getPayload());
             session.sendMessage(textMessage);
             logger.info("Clients connected count: " + connections.size());
-            for (WebSocketSession webSocketSession: connections) {
-                if (webSocketSession.getId().equals(session.getId())) continue;
-                webSocketSession.sendMessage(textMessage);
+            for (Session session1: connections) {
+                if (session1.getWebSocketSession().getId().equals(session.getId())) continue;
+                session1.getWebSocketSession().sendMessage(textMessage);
             }
         }
     }
@@ -68,13 +69,16 @@ public class WebsocketAdapter extends TextWebSocketHandler implements WebsocketP
     @Override
     public void afterConnectionEstablished(WebSocketSession session) throws Exception {
         super.afterConnectionEstablished(session);
-        connections.add(session);
+        if (session.getUri() == null) throw new Exception("No uri");
+        String[] splitPath = session.getUri().getPath().split("channel/");
+        Session createdSession = new Session(splitPath[1], session);
+        connections.add(createdSession);
     }
 
     @Override
     public void afterConnectionClosed(WebSocketSession session, CloseStatus status) throws Exception {
         super.afterConnectionClosed(session, status);
-        connections.removeIf(webSocketSession -> webSocketSession.getId().equals(session.getId()));
+        connections.removeIf(session1 -> session.getId().equals(session1.getWebSocketSession().getId()));
     }
 
     @Override

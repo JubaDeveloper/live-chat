@@ -50,7 +50,7 @@ public class UserRestApiTest {
     @Order(2)
     void throwOnUserAlreadyExistsCreation () {
         String apiUserCreationEndPointUrl = String.format(urlPattern, "localhost", serverPort, "api/user/register");
-        User user = new User("juba@gmail.com", "jubadev", "juba");
+        User user = new User("juba@gmail.com", "jubadev13", "juba");
         UserAlreadyExistsException expectedException = new UserAlreadyExistsException(user.getEmail());
         ResponseEntity<String> createdUserResponse = testRestTemplate.postForEntity(URI.create(apiUserCreationEndPointUrl), user, String.class);
         Assertions.assertThat(createdUserResponse.getStatusCode().value()).isEqualTo(400);
