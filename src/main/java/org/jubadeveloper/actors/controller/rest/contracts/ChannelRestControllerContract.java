@@ -1,5 +1,6 @@
 package org.jubadeveloper.actors.controller.rest.contracts;
 
+import oracle.ucp.proxy.annotation.Post;
 import org.jubadeveloper.core.domain.Channel;
 import org.jubadeveloper.several.exceptions.ChannelNotFoundException;
 import org.jubadeveloper.several.exceptions.UserNotFoundException;
