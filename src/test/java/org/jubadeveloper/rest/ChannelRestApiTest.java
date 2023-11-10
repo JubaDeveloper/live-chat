@@ -81,6 +81,7 @@ public class ChannelRestApiTest {
         String urlChannelCreation = String.format(urlPattern, "localhost", serverPort, "panel/api/channel");
         HttpHeaders httpHeaders = new HttpHeaders();
         httpHeaders.set("cookie", "X-Authorization=;");
+        httpHeaders.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
         Channel channel = new Channel(mockUser.getEmail(), "Mock channel test", "Test");
         String channelUrlFormEncoded = String.format(channelEncodedPatternCreation, channel.getName(), channel.getDescription());
         HttpEntity<String> httpEntity = new HttpEntity<>(channelUrlFormEncoded, httpHeaders);

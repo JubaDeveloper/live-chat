@@ -58,6 +58,9 @@ public class AuthService implements AuthServiceContract {
             for (String cookie: splitCookies) {
                 String[] splitCookie = cookie.split("=");
                 if (splitCookie[0].contains("X-Authorization")) {
+                    if (splitCookie.length < 2) {
+                        break;
+                    }
                     authToken = splitCookie[1];
                     break;
                 }
