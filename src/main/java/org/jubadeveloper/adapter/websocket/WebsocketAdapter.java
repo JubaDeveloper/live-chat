@@ -60,7 +60,9 @@ public class WebsocketAdapter extends TextWebSocketHandler implements WebsocketP
             session.sendMessage(textMessage);
             logger.info("Clients connected count: " + connections.size());
             for (Session session1: connections) {
-                if (session1.getWebSocketSession().getId().equals(session.getId())) continue;
+                String channelIdMessage = session.getUri().getPath().split("channel/")[1];
+                if (!session1.getChannelId().equals(channelIdMessage)
+                        || session1.getWebSocketSession().getId().equals(session.getId())) continue;
                 session1.getWebSocketSession().sendMessage(textMessage);
             }
         }

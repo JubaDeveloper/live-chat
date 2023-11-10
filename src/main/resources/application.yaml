@@ -23,4 +23,5 @@ server:
   port: 3000
 properties:
   private_key: "5023023010231231325"
-  serverUrl:
+  serverUrl: "127.0.0.1"
+  serverPort: 6001
