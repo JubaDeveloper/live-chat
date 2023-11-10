@@ -42,10 +42,10 @@ public class UserRestController implements UserRestControllerContract {
                         .headers(responseHeaders)
                         .body(user1);
             }
+            throw new InvalidLoginException();
         } catch (UserNotFoundException userNotFoundException) {
             throw new InvalidLoginException();
         }
-        return null;
     }
 
     @Override
