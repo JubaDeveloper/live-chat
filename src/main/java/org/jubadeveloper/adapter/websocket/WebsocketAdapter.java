@@ -16,12 +16,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.web.socket.CloseStatus;
 import org.springframework.web.socket.TextMessage;
-import org.springframework.web.socket.WebSocketMessage;
 import org.springframework.web.socket.WebSocketSession;
 import org.springframework.web.socket.handler.TextWebSocketHandler;
 
 import java.io.IOException;
 import java.time.LocalDate;
+import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -41,6 +41,8 @@ public class WebsocketAdapter extends TextWebSocketHandler implements WebsocketP
     protected void handleTextMessage(WebSocketSession session, TextMessage message) throws AuthenticationException, UserNotFoundException, ChannelNotFoundException, IOException {
         // Channel validation and user is did here
         String path = Objects.requireNonNull(session.getUri()).getPath();
+        LocalTime messageTime = LocalTime.now();
+        LocalDate messageDate = LocalDate.now();
         String[] splitPath = path.split("/");
         if (splitPath[1] != null) {
             Long channelId = Long.valueOf(splitPath[2]);
@@ -56,7 +58,7 @@ public class WebsocketAdapter extends TextWebSocketHandler implements WebsocketP
 //                this.messageListener.onMessage(user, message.getPayload());
 //            }
             this.messageListener.onMessage(user, message.getPayload());
-            TextMessage textMessage = new TextMessage(user.getUsername() + ":" + LocalDate.now() + ":" + message.getPayload());
+            TextMessage textMessage = new TextMessage(user.getUsername() + ":" + messageDate + " - " +  messageTime.toString().split(":")[0] + ":" + message.getPayload());
             session.sendMessage(textMessage);
             logger.info("Clients connected count: " + connections.size());
             for (Session session1: connections) {
@@ -71,16 +73,37 @@ public class WebsocketAdapter extends TextWebSocketHandler implements WebsocketP
     @Override
     public void afterConnectionEstablished(WebSocketSession session) throws Exception {
         super.afterConnectionEstablished(session);
+        List<String> cookies = session.getHandshakeHeaders().get("cookie");
+        if (cookies == null) cookies = new ArrayList<>();
+        String auth = AuthService.getTokenFromCookies(cookies);
+        String email = authService.checkAuth(auth);
+        User user = userService.getUser(email);
         if (session.getUri() == null) throw new Exception("No uri");
         String[] splitPath = session.getUri().getPath().split("channel/");
-        Session createdSession = new Session(splitPath[1], session);
+        Session createdSession = new Session(splitPath[1], session, user);
         connections.add(createdSession);
+        // Send authenticated users username in channel
+        List<String> authenticatedUsersUsername = new ArrayList<>();
+        for (Session session1: connections) {
+            authenticatedUsersUsername.add(String.format("\"%s\"", session1.getUser().getUsername()));
+        }
+        // Send reload signal to each session using user email as identification
+        for (Session session1: connections) {
+            session1.getWebSocketSession().sendMessage(new TextMessage(session1.getUser().getEmail() + "-" + "users" + "-" + authenticatedUsersUsername));
+        }
     }
 
     @Override
     public void afterConnectionClosed(WebSocketSession session, CloseStatus status) throws Exception {
         super.afterConnectionClosed(session, status);
         connections.removeIf(session1 -> session.getId().equals(session1.getWebSocketSession().getId()));
+        List<String> authenticatedUsersUsername = new ArrayList<>();
+        for (Session session1: connections) {
+            authenticatedUsersUsername.add(String.format("\"%s\"", session1.getUser().getUsername()));
+        }
+        for (Session session1: connections) {
+            session1.getWebSocketSession().sendMessage(new TextMessage(session1.getUser().getEmail() + "-" + "users" + "-" + authenticatedUsersUsername));
+        }
     }
 
     @Override
