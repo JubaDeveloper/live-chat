@@ -10,4 +10,6 @@ public interface ChannelServiceContract {
     Channel getChannelById (Long id) throws ChannelNotFoundException;
     Channel updateChannel (Long id, Channel newChannel) throws ChannelNotFoundException;
     List<Channel> getAllChannels ();
+    Channel saveMessage (Long id, String message) throws ChannelNotFoundException;
+    List<String> getLast10Messages (Long id) throws ChannelNotFoundException;
 }

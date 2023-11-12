@@ -19,15 +19,22 @@ public class Channel {
             targetEntity = User.class,
             fetch = FetchType.EAGER
     )
-    private List<User> users;
-    public Channel () {
-        users = new ArrayList<>();
-    }
+    private List<User> users = new ArrayList<>();
+    @ElementCollection(fetch = FetchType.LAZY)
+    private List<String> messages = new ArrayList<>();
+    public Channel () {}
     public Channel(String creatorId, String name, String description) {
         this.creatorId = creatorId;
         this.name = name;
         this.description = description;
-        users = new ArrayList<>();
+    }
+
+    public List<String> getMessages() {
+        return messages;
+    }
+
+    public void setMessages(List<String> messages) {
+        this.messages = messages;
     }
 
     public String getDescription() {

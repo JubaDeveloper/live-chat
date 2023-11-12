@@ -1,8 +1,11 @@
 package org.jubadeveloper.adapter.websocket;
 
+import jakarta.annotation.Nonnull;
+import jakarta.transaction.Transactional;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.jubadeveloper.adapter.websocket.session.Session;
+import org.jubadeveloper.core.domain.Channel;
 import org.jubadeveloper.core.domain.User;
 import org.jubadeveloper.core.ports.WebsocketPort;
 import org.jubadeveloper.core.services.AuthService;
@@ -38,7 +41,7 @@ public class WebsocketAdapter extends TextWebSocketHandler implements WebsocketP
     private final List<Session> connections = new ArrayList<>();
     private final Logger logger = LogManager.getLogger(WebsocketAdapter.class);
     @Override
-    protected void handleTextMessage(WebSocketSession session, TextMessage message) throws AuthenticationException, UserNotFoundException, ChannelNotFoundException, IOException {
+    protected void handleTextMessage(WebSocketSession session, @Nonnull TextMessage message) throws AuthenticationException, UserNotFoundException, ChannelNotFoundException, IOException {
         // Channel validation and user is did here
         String path = Objects.requireNonNull(session.getUri()).getPath();
         LocalTime messageTime = LocalTime.now();
@@ -51,27 +54,17 @@ public class WebsocketAdapter extends TextWebSocketHandler implements WebsocketP
             String auth = AuthService.getTokenFromCookies(cookies);
             String email = authService.checkAuth(auth);
             User user = userService.getUser(email);
-            List<User> users = channelService.getChannelById(channelId)
-                    .getUsers().stream().filter(user1 -> user1.getEmail().equals(user.getEmail()))
-                    .toList();
-//            if (users.size() > 0) {
-//                this.messageListener.onMessage(user, message.getPayload());
-//            }
             this.messageListener.onMessage(user, message.getPayload());
-            TextMessage textMessage = new TextMessage(user.getUsername() + ":" + messageDate + " - " +  messageTime.toString().split(":")[0] + ":" + message.getPayload());
+            String finalMessage = user.getUsername() + ":" + messageDate + " - " +  messageTime.toString().split("\\.")[0] + ":" + message.getPayload();
+            TextMessage textMessage = new TextMessage(finalMessage);
+            saveMessage(channelId, finalMessage);
             session.sendMessage(textMessage);
-            logger.info("Clients connected count: " + connections.size());
-            for (Session session1: connections) {
-                String channelIdMessage = session.getUri().getPath().split("channel/")[1];
-                if (!session1.getChannelId().equals(channelIdMessage)
-                        || session1.getWebSocketSession().getId().equals(session.getId())) continue;
-                session1.getWebSocketSession().sendMessage(textMessage);
-            }
+            propagateMessageToClients(session, textMessage);
         }
     }
 
     @Override
-    public void afterConnectionEstablished(WebSocketSession session) throws Exception {
+    public void afterConnectionEstablished(@Nonnull WebSocketSession session) throws Exception {
         super.afterConnectionEstablished(session);
         List<String> cookies = session.getHandshakeHeaders().get("cookie");
         if (cookies == null) cookies = new ArrayList<>();
@@ -82,6 +75,7 @@ public class WebsocketAdapter extends TextWebSocketHandler implements WebsocketP
         String[] splitPath = session.getUri().getPath().split("channel/");
         Session createdSession = new Session(splitPath[1], session, user);
         connections.add(createdSession);
+        getLast10MessagesByChannelIdAndSend(Long.valueOf(splitPath[1]), session);
         // Send authenticated users username in channel
         List<String> authenticatedUsersUsername = new ArrayList<>();
         for (Session session1: connections) {
@@ -94,7 +88,7 @@ public class WebsocketAdapter extends TextWebSocketHandler implements WebsocketP
     }
 
     @Override
-    public void afterConnectionClosed(WebSocketSession session, CloseStatus status) throws Exception {
+    public void afterConnectionClosed(@Nonnull WebSocketSession session, @Nonnull CloseStatus status) throws Exception {
         super.afterConnectionClosed(session, status);
         connections.removeIf(session1 -> session.getId().equals(session1.getWebSocketSession().getId()));
         List<String> authenticatedUsersUsername = new ArrayList<>();
@@ -109,6 +103,30 @@ public class WebsocketAdapter extends TextWebSocketHandler implements WebsocketP
     @Override
     public void addMessageListener(MessageListener messageListener) {
         this.messageListener = messageListener;
+    }
+
+    public void getLast10MessagesByChannelIdAndSend (Long channelId,
+                                                             WebSocketSession webSocketSession) throws ChannelNotFoundException {
+        List<String> messages = channelService.getLast10Messages(channelId);
+        messages
+                .forEach(m -> {
+                    try {
+                        webSocketSession.sendMessage(new TextMessage(m));
+                    } catch (Exception ignored) {}
+                });
+    }
+    public void saveMessage (Long id,
+                             String message) throws ChannelNotFoundException {
+        channelService.saveMessage(id, message);
+    }
+    public void propagateMessageToClients (WebSocketSession session, TextMessage message) throws IOException {
+        logger.info("Clients connected count: " + connections.size());
+        for (Session session1: connections) {
+            String channelIdMessage = Objects.requireNonNull(session.getUri()).getPath().split("channel/")[1];
+            if (!session1.getChannelId().equals(channelIdMessage)
+                    || session1.getWebSocketSession().getId().equals(session.getId())) continue;
+            session1.getWebSocketSession().sendMessage(message);
+        }
     }
 }
 

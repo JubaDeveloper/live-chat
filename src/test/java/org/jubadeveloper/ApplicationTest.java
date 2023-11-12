@@ -11,7 +11,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import java.time.LocalTime;
 
-@SpringBootTest
+// @SpringBootTest
 public class ApplicationTest {
     private final Logger logger = LogManager.getLogger(Test.class);
 
@@ -26,6 +26,6 @@ public class ApplicationTest {
     @Test
     public void date () {
         LocalTime localTime = LocalTime.now();
-        logger.info("Time: " + localTime);
+        logger.info("Time: " + localTime.toString().split("\\.")[0]);
     }
 }

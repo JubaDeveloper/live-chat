@@ -33,4 +33,14 @@ public class ChannelService implements ChannelServiceContract {
     public List<Channel> getAllChannels() {
         return channelRepositoryPort.getAll();
     }
+
+    @Override
+    public Channel saveMessage(Long id, String message) throws ChannelNotFoundException {
+        return channelRepositoryPort.saveMessage(id, message);
+    }
+
+    @Override
+    public List<String> getLast10Messages(Long id) throws ChannelNotFoundException {
+        return channelRepositoryPort.getLast10Messages(id);
+    }
 }
